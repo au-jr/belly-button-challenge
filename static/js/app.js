@@ -98,6 +98,9 @@ function buildCharts(sample) {
         t: 100,
         b: 100
       },
+      xaxis: {title : {
+        text: 'OTU Frequency'
+      }},
       height: 500,
       width: 1200
     };
@@ -109,6 +112,12 @@ function buildCharts(sample) {
     // Build layout for Bubble Chart
     let bubbleLayout = {
       title: '',
+      xaxis: {title : {
+        text: 'OTU ID'
+      }},
+      yaxis: {title : {
+        text: 'OTU Frequency'
+      }},
       showlegend: false,
       height: 600,
       width: 1000
@@ -124,9 +133,10 @@ function buildCharts(sample) {
         mode: 'markers',
         marker: {
           color: otu_id_raw,
+          colorscale: 'Portland',
           opacity: 0.8,
           size: sample_values,
-          sizeref: 1.5
+          sizeref: 2
         }
       }
     ];
