@@ -113,7 +113,7 @@ function buildCharts(sample) {
         text: 'OTU Frequency'
       }},
       height: 500,
-      width: 1200
+      width: 900
     };
 
     // Render the plot to the div tag with id "bar"
@@ -131,7 +131,7 @@ function buildCharts(sample) {
       }},
       showlegend: false,
       height: 600,
-      width: 1350
+      width: 1100
     };
 
     // Define data for Bubble Chart
