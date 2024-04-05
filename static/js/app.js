@@ -64,9 +64,9 @@ function buildCharts(sample) {
     };
 
     // Extract relevant data for Bubble Chart
-    let otuIds = [];
-    let otuLabels = [];
-    let sampleValues = result.sample_values;
+    let otu_ids = [];
+    let otu_labels = [];
+    let sample_values  = result.sample_values;
 
     // Some processing of the OTU ids and the labels needs to be done. This loop iterates through the sample and processes each accoridngly.
     for (j = 0; j < result.otu_ids.length; j++) {
@@ -75,23 +75,23 @@ function buildCharts(sample) {
       // Add `OTU ` to the beginning of each.
       otu_ids_unfiltered = `OTU ${result.otu_ids[j]}`;
       // Push the output to the otuIds array
-      otuIds.push(otu_ids_unfiltered);
+      otu_ids.push(otu_ids_unfiltered);
 
       // Extract the raw otu label data for each otu id in the sample to an unfiltered array
       otu_labels_unfiltered = result.otu_labels[j];
       // .replce accepts regex commands, so we convert the label to a string and replace all ';' to make it better readable.
       otu_labels_unfiltered_replaced = otu_labels_unfiltered.toString().replace(/;/g, " ");
       // Push the output to the otuLabels array
-      otuLabels.push(otu_labels_unfiltered_replaced);
+      otu_labels.push(otu_labels_unfiltered_replaced);
     };
 
     // Extract top 10 OTU IDs for Bar Chart
     // Define data for Bar Chart
 
     let trace1 = {
-      x: sampleValues.slice(0, 10).reverse(),
-      y: otuIds.slice(0, 10).reverse(),
-      text: otuLabels.slice(0, 10).reverse(),
+      x: sample_values .slice(0, 10).reverse(),
+      y: otu_ids.slice(0, 10).reverse(),
+      text: otu_labels.slice(0, 10).reverse(),
       name: "OTU",
       type: "bar",
       orientation: "h"
@@ -139,14 +139,14 @@ function buildCharts(sample) {
     let bubbleData = [
       {
         x: otu_id_raw,
-        y: sampleValues,
-        text: otuLabels,
+        y: sample_values ,
+        text: otu_labels,
         mode: 'markers',
         marker: {
           color: otu_id_raw,
           colorscale: 'Portland',
           opacity: 0.8,
-          size: sampleValues,
+          size: sample_values ,
           sizeref: 2
         }
       }
