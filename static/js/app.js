@@ -10,12 +10,14 @@ function buildMetadata(sample) {
     // Extract the 'metadata' array from the fetched data
     let subMeta = data.metadata;
 
-    // // Filter the 'metadata' array based on the provided 'sample' ID
+    // Filter the 'metadata' array based on the provided 'sample' ID
+    // Create a loop that searches through metadata array and locates the information for hat subject by matching the subject id to that called in the buildMetadata function.
     for (i = 0; i < subMeta.length; i++) {
       if (subMeta[i].id == sample) {
-        var resultArray = subMeta[i];
+        var resultArray = subMeta[i];        
       };
     };
+    console.log(resultArray);
 
     // Select the HTML panel with the id of `#sample-metadata` using D3
     let PANEL = d3.select("#sample-metadata");
@@ -23,10 +25,11 @@ function buildMetadata(sample) {
     // Clear any existing metadata in the panel using `.html("")`
     PANEL.html("");
 
-    PANEL.append('h6').append('ul').append('li');
-    h6Create = d3.select('li');
-
-    // Iterate through each key-value pair in the metadata and append them as <h6> tags to the panel
+    // Append the h6 element the div with the sample-metadata id.
+    PANEL.append('h6');
+    // Select the h6 element
+    h6Create = PANEL.select('h6');
+    // Iterate through each key-value pair in the metadata and append them as lists to the <h6> tags in the panel
     for (let key of Object.entries(
       resultArray
     )) {
@@ -34,10 +37,6 @@ function buildMetadata(sample) {
     };
   })
 };
-// // Bonus: Build the Gauge Chart using the washing frequency data
-// buildGauge();
-
-
 
 /*
 This function, buildCharts, is designed to generate visualizations (Bubble Chart and Bar Chart) based on sample data retrieved from an external JSON file. It uses D3.js to fetch the data asynchronously. The function filters the samples based on a provided sample ID, then extracts relevant data (OTU IDs, OTU labels, and sample values) to populate the charts.
@@ -50,9 +49,14 @@ function buildCharts(sample) {
   // Fetch data asynchronously from an external JSON file using D3.js
   d3.json(url).then((data) => {
     // Extract the 'samples' array from the fetched data
-    var sampleIds = data.samples;
+    var sampleIdsUnsorted = data.samples;
 
-    // Filter the 'samples' array based on the provided 'sample' ID
+    // Sort the array based on their sample_values in descending order.
+    let sampleIds = sampleIdsUnsorted.sort(function sortFunction(a, b) {
+      return (b.sample_values - a.sample_values);
+    });
+
+    // Locate the metadata for the subject with an id matching the sample called in the buildCharts function.
     for (i = 0; i < sampleIds.length; i++) {
       if (sampleIds[i].id == sample) {
         var result = sampleIds[i];
@@ -60,27 +64,34 @@ function buildCharts(sample) {
     };
 
     // Extract relevant data for Bubble Chart
-    let otu_ids = [];
-    let otu_labels = [];
-    let sample_values = result.sample_values;
+    let otuIds = [];
+    let otuLabels = [];
+    let sampleValues = result.sample_values;
 
+    // Some processing of the OTU ids and the labels needs to be done. This loop iterates through the sample and processes each accoridngly.
     for (j = 0; j < result.otu_ids.length; j++) {
+      // Extract the OTU Ids as an array
       otu_id_raw = result.otu_ids;
+      // Add `OTU ` to the beginning of each.
       otu_ids_unfiltered = `OTU ${result.otu_ids[j]}`;
-      otu_ids.push(otu_ids_unfiltered);
+      // Push the output to the otuIds array
+      otuIds.push(otu_ids_unfiltered);
 
+      // Extract the raw otu label data for each otu id in the sample to an unfiltered array
       otu_labels_unfiltered = result.otu_labels[j];
+      // .replce accepts regex commands, so we convert the label to a string and replace all ';' to make it better readable.
       otu_labels_unfiltered_replaced = otu_labels_unfiltered.toString().replace(/;/g, " ");
-      otu_labels.push(otu_labels_unfiltered_replaced);
+      // Push the output to the otuLabels array
+      otuLabels.push(otu_labels_unfiltered_replaced);
     };
 
     // Extract top 10 OTU IDs for Bar Chart
     // Define data for Bar Chart
 
     let trace1 = {
-      x: sample_values.slice(0, 10).reverse(),
-      y: otu_ids.slice(0, 10).reverse(),
-      text: otu_labels.slice(0, 10).reverse(),
+      x: sampleValues.slice(0, 10).reverse(),
+      y: otuIds.slice(0, 10).reverse(),
+      text: otuLabels.slice(0, 10).reverse(),
       name: "OTU",
       type: "bar",
       orientation: "h"
@@ -120,7 +131,7 @@ function buildCharts(sample) {
       }},
       showlegend: false,
       height: 600,
-      width: 1000
+      width: 1350
     };
 
     // Define data for Bubble Chart
@@ -128,14 +139,14 @@ function buildCharts(sample) {
     let bubbleData = [
       {
         x: otu_id_raw,
-        y: sample_values,
-        text: otu_labels,
+        y: sampleValues,
+        text: otuLabels,
         mode: 'markers',
         marker: {
           color: otu_id_raw,
           colorscale: 'Portland',
           opacity: 0.8,
-          size: sample_values,
+          size: sampleValues,
           sizeref: 2
         }
       }
